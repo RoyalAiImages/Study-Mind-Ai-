@@ -4,13 +4,14 @@ import type { View } from '../types';
 interface SidebarProps {
   activeView: View;
   setActiveView: (view: View) => void;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (isOpen: boolean) => void;
 }
 
 const NavItem: React.FC<{
   view: View;
   activeView: View;
   setActiveView: (view: View) => void;
-  // Fix: Used React.ReactNode instead of JSX.Element to resolve namespace issue.
   icon: React.ReactNode;
   label: string;
 }> = ({ view, activeView, setActiveView, icon, label }) => (
@@ -28,53 +29,72 @@ const NavItem: React.FC<{
   </button>
 );
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isSidebarOpen, setIsSidebarOpen }) => {
+  const handleNavigation = (view: View) => {
+    setActiveView(view);
+    setIsSidebarOpen(false); // Close sidebar after navigation on mobile
+  };
+
   return (
-    <aside className="w-56 bg-background p-4 border-r border-border flex flex-col">
-      <div className="flex items-center mb-8">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 1.9c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm-1.8 14.9l-4-4.2 1.4-1.4 2.6 2.8 5.6-6.6 1.4 1.4-7 8z" />
-        </svg>
-        <h1 className="text-xl font-bold ml-2 text-text-primary">StudyMind Ai</h1>
-      </div>
-      <nav className="flex flex-col space-y-2">
-        <NavItem
-          view="dashboard"
-          activeView={activeView}
-          setActiveView={setActiveView}
-          icon={<DashboardIcon />}
-          label="Dashboard"
-        />
-        <NavItem
-          view="summarizer"
-          activeView={activeView}
-          setActiveView={setActiveView}
-          icon={<SummarizerIcon />}
-          label="Summarizer"
-        />
-        <NavItem
-          view="flashcards"
-          activeView={activeView}
-          setActiveView={setActiveView}
-          icon={<FlashcardsIcon />}
-          label="Flashcards"
-        />
-        <NavItem
-          view="planner"
-          activeView={activeView}
-          setActiveView={setActiveView}
-          icon={<PlannerIcon />}
-          label="Study Planner"
-        />
-        <NavItem
-          view="doubts"
-          activeView={activeView}
-          setActiveView={setActiveView}
-          icon={<DoubtsIcon />}
-          label="Doubt Solver"
-        />
-      </nav>
-    </aside>
+    <>
+      {/* Overlay for mobile */}
+      <div
+        className={`fixed inset-0 bg-black/50 z-30 transition-opacity md:hidden ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setIsSidebarOpen(false)}
+        aria-hidden="true"
+      />
+      
+      {/* Sidebar Panel */}
+      <aside className={`fixed inset-y-0 left-0 w-56 bg-background p-4 border-r border-border flex flex-col z-40 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="hidden md:flex items-center mb-8">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 1.9c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm-1.8 14.9l-4-4.2 1.4-1.4 2.6 2.8 5.6-6.6 1.4 1.4-7 8z" />
+          </svg>
+          <h1 className="text-xl font-bold ml-2 text-text-primary">StudyMind Ai</h1>
+        </div>
+
+        {/* Spacer for mobile to clear the header */}
+        <div className="h-16 md:hidden" />
+
+        <nav className="flex flex-col space-y-2">
+          <NavItem
+            view="dashboard"
+            activeView={activeView}
+            setActiveView={handleNavigation}
+            icon={<DashboardIcon />}
+            label="Dashboard"
+          />
+          <NavItem
+            view="summarizer"
+            activeView={activeView}
+            setActiveView={handleNavigation}
+            icon={<SummarizerIcon />}
+            label="Summarizer"
+          />
+          <NavItem
+            view="flashcards"
+            activeView={activeView}
+            setActiveView={handleNavigation}
+            icon={<FlashcardsIcon />}
+            label="Flashcards"
+          />
+          <NavItem
+            view="planner"
+            activeView={activeView}
+            setActiveView={handleNavigation}
+            icon={<PlannerIcon />}
+            label="Study Planner"
+          />
+          <NavItem
+            view="doubts"
+            activeView={activeView}
+            setActiveView={handleNavigation}
+            icon={<DoubtsIcon />}
+            label="Doubt Solver"
+          />
+        </nav>
+      </aside>
+    </>
   );
 };
 
