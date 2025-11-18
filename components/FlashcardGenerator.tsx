@@ -50,13 +50,17 @@ export const FlashcardGenerator: React.FC<FlashcardGeneratorProps> = ({ addRevie
       
       const instruction = `Based on the following content, generate a set of flashcards. Each flashcard should have a 'question' (a term or concept) and an 'answer' (its definition or explanation). Provide at least 5 flashcards if possible.`;
       
-      const contentPart = file 
-        ? await fileToGenerativePart(file) 
-        : { text: sourceText };
+      let contents: any;
+      if (file) {
+        const filePart = await fileToGenerativePart(file);
+        contents = { parts: [{ text: instruction }, filePart] };
+      } else {
+        contents = `${instruction}\n\n${sourceText}`;
+      }
         
       const response = await ai.models.generateContent({
         model: model,
-        contents: { parts: [{ text: instruction }, contentPart] },
+        contents: contents,
         config: {
           responseMimeType: "application/json",
           responseSchema: {

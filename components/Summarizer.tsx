@@ -40,18 +40,20 @@ export const Summarizer: React.FC = () => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const model = 'gemini-2.5-flash';
 
-      let promptParts: any[] = [{ text: 'Summarize the following content in the style of concise, academic study notes. Use bullet points for key information:' }];
+      const instruction = 'Summarize the following content in the style of concise, academic study notes. Use bullet points for key information:';
+      let contents: any;
 
       if (file) {
         const filePart = await fileToGenerativePart(file);
-        promptParts.push(filePart);
+        contents = { parts: [{ text: instruction }, filePart] };
       } else {
-        promptParts.push({ text: inputText });
+        // Combine instruction and input text into a single string for text-only requests
+        contents = `${instruction}\n\n${inputText}`;
       }
 
       const response = await ai.models.generateContent({
         model: model,
-        contents: { parts: promptParts },
+        contents: contents,
       });
       
       setSummary(response.text);
