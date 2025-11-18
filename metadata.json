@@ -1,0 +1,7 @@
+{
+  "name": "StudyMind Ai - AI Student Assistant",
+  "description": "An AI-powered student productivity app that converts lecture notes, PDFs, and screenshots into instant summaries, exam-focused notes, flashcards, and assignment schedules. It automatically understands college deadlines, extracts tasks from screenshots, explains doubts step-by-step, and creates personalized study plans.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
